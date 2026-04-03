@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Algo Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f7;--white:#fff;
+  --green:#00b884;--green-bg:#f0faf6;--green-border:#c6f0e3;
+  --red:#e5383b;--red-bg:#fff0f0;--red-border:#fcc;
+  --blue:#0066cc;--blue-bg:#f0f5ff;
+  --orange:#f97316;--purple:#a855f7;--gold:#eab308;--pink:#ec4899;
+  --txt0:#1d1d1f;--txt1:#6e6e73;--txt2:#aeaeb2;
+  --border:#e5e5ea;--border2:#f0f0f3;
+  --sans:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+}
+body{background:var(--bg);color:var(--txt0);font-family:var(--sans);min-height:100vh;padding-bottom:30px}
+
+/* Header */
+.hdr{background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hdr-logo{font-size:16px;font-weight:700;color:var(--txt0);letter-spacing:-.5px}
+.hdr-logo span{color:var(--green)}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.live{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);font-weight:500}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.clock{font-size:11px;color:var(--txt2);font-family:var(--mono)}
+
+/* Loading */
+.loading{text-align:center;padding:60px 20px;color:var(--txt2)}
+.loading-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-size:13px}
+
+/* Hero */
+.hero{padding:20px 16px 16px;background:var(--white);border-bottom:1px solid var(--border)}
+.hero-eyebrow{font-size:11px;color:var(--txt2);font-weight:500;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.hero-pnl{font-size:48px;font-weight:700;letter-spacing:-2px;line-height:1}
+.hero-pnl.pos{color:var(--green)}
+.hero-pnl.neg{color:var(--red)}
+.hero-pnl.neu{color:var(--txt1)}
+.hero-sub{font-size:12px;color:var(--txt2);margin-top:5px;margin-bottom:16px}
+.hero-pills{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.hero-pills::-webkit-scrollbar{display:none}
+.pill{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:7px 14px;white-space:nowrap;flex-shrink:0}
+.pill-label{font-size:10px;color:var(--txt2);display:block;margin-bottom:1px;text-transform:uppercase;letter-spacing:.3px}
+.pill-val{font-size:13px;font-weight:600}
+.pill-val.g{color:var(--green)}
+.pill-val.r{color:var(--red)}
+
+/* Section */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px}
+.section-title{font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px}
+
+/* Algo scroll */
+.algo-scroll{display:flex;gap:10px;padding:0 16px 14px;overflow-x:auto;scrollbar-width:none}
+.algo-scroll::-webkit-scrollbar{display:none}
+.acard{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:14px;min-width:140px;flex-shrink:0;transition:border-color .15s}
+.acard:active{transform:scale(.97)}
+.acard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.acard-name{font-size:12px;font-weight:600}
+.acard-sym{font-size:10px;color:var(--txt2);margin-top:1px}
+.acard-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.acard-pnl{font-size:24px;font-weight:700;letter-spacing:-1px;margin-bottom:8px}
+.acard-bar{height:3px;border-radius:2px;background:var(--border);overflow:hidden;margin-bottom:8px}
+.acard-bar-fill{height:100%;border-radius:2px;transition:width .6s ease}
+.acard-stats{display:flex;gap:10px}
+.astat{font-size:10px}
+.astat-l{color:var(--txt2);font-size:9px;display:block;margin-bottom:1px;text-transform:uppercase}
+.astat-v{font-weight:600}
+
+/* Filters */
+.filters{display:flex;gap:6px}
+.filter{font-size:11px;padding:4px 12px;border:1px solid var(--border);color:var(--txt1);border-radius:20px;cursor:pointer;transition:all .15s;background:var(--white)}
+.filter.on{border-color:var(--green);color:var(--green);background:var(--green-bg)}
+
+/* Trade cards */
+.trade-list{padding:0 16px}
+.tcard{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:8px;transition:all .15s}
+.tcard:active{transform:scale(.98)}
+.tcard.win{border-left:3px solid var(--green)}
+.tcard.loss{border-left:3px solid var(--red)}
+.tcard.open{border-left:3px solid var(--blue)}
+.tcard-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.tcard-algo{font-size:11px;font-weight:600;color:var(--txt1)}
+.tcard-time{font-size:10px;color:var(--txt2);font-family:var(--mono)}
+.badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px}
+.bw{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.bl{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.bo{background:var(--blue-bg);color:var(--blue);border:1px solid #c7d9f5}
+.tcard-main{display:flex;align-items:flex-end;justify-content:space-between}
+.tcard-sym{font-size:17px;font-weight:700;letter-spacing:-.5px}
+.tcard-dir{font-size:11px;color:var(--txt2);margin-top:2px;font-family:var(--mono)}
+.tcard-pnl{font-size:26px;font-weight:700;letter-spacing:-1px}
+.tcard-meta{display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)}
+.tmeta{font-size:10px;color:var(--txt2)}
+.tmeta b{display:block;font-size:11px;color:var(--txt0);font-weight:600;margin-bottom:1px}
+
+.empty{text-align:center;padding:40px 20px;color:var(--txt2);font-size:13px}
+
+/* Month target */
+.target-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:16px;margin:0 16px 8px}
+.target-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px}
+.target-earned{font-size:28px;font-weight:700;letter-spacing:-1px;color:var(--gold)}
+.target-goal{font-size:12px;color:var(--txt2)}
+.target-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:6px}
+.target-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--gold));transition:width 1s ease}
+.target-sub{font-size:11px;color:var(--txt2)}
+
+/* Error */
+.error-banner{background:#fff0f0;border:1px solid #fcc;border-radius:10px;padding:12px;margin:12px 16px;font-size:12px;color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-logo">algo<span>.</span>terminal</div>
+  <div class="hdr-right">
+    <div class="live"><div class="dot"></div><span id="liveStatus">Connexion...</span></div>
+    <div class="clock" id="clock">--:--</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div id="app">
+  <div class="loading">
+    <div class="loading-spinner"></div>
+    <p>Chargement des données...</p>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════
+const WEBHOOK = 'https://script.google.com/macros/s/AKfycbxGM4V97lUDABb-iysa9B_GL98BKY4V1FA1FsYH3VcOJDWvsID7f0N3vntIXF6Nheo-Zg/exec';
+
+const ALGOS = [
+  { magic:'20250317', name:'Algo1-DAX',    sym:'DE40',   tf:'M5', color:'#00b884', risk:25  },
+  { magic:'20250318', name:'Algo2-NASDAQ', sym:'USTEC',  tf:'M5', color:'#0066cc', risk:25  },
+  { magic:'20250319', name:'Algo3-TPFX',  sym:'FX',     tf:'H1', color:'#a855f7', risk:50  },
+  { magic:'20250320', name:'Algo4-WBFX',  sym:'FX',     tf:'H1', color:'#f97316', risk:50  },
+  { magic:'20250325', name:'Algo5-XAU',   sym:'XAUUSD', tf:'M5', color:'#eab308', risk:50  },
+  { magic:'20250328', name:'Algo6-LSR',   sym:'EURUSD', tf:'M5', color:'#ec4899', risk:25  },
+];
+
+let allTrades = [];
+let currentFilter = 'all';
+let refreshInterval = null;
+
+// ════════════════════════════════════════
+// CLOCK
+// ════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('fr-CH', { hour:'2-digit', minute:'2-digit' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ════════════════════════════════════════
+// LOAD DATA
+// ════════════════════════════════════════
+async function loadData() {
+  try {
+    const r = await fetch(WEBHOOK + '?action=getAll&t=' + Date.now());
+    const d = await r.json();
+    if(d.status === 'ok') {
+      allTrades = parseRows(d.journal || []);
+      document.getElementById('liveStatus').textContent = 'Live';
+      render();
+    } else {
+      showError('Erreur Google Sheets: ' + (d.message || 'inconnue'));
+    }
+  } catch(e) {
+    document.getElementById('liveStatus').textContent = 'Démo';
+    allTrades = getDemoData();
+    render();
+  }
+}
+
+function parseRows(rows) {
+  return rows.map(r => ({
+    date:   String(r['DATE'] || r.date || ''),
+    heure:  String(r['HEURE'] || r.heure || ''),
+    algo:   String(r['ALGO'] || r.algo || ''),
+    symbol: String(r['SYMBOL'] || r.symbol || ''),
+    dir:    String(r['DIRECTION'] || r.direction || ''),
+    entry:  parseFloat(r['ENTRÉE'] || r.entry || 0),
+    sl:     parseFloat(r['SL'] || r.sl || 0),
+    tp:     parseFloat(r['TP'] || r.tp || 0),
+    profit: parseFloat(r['PROFIT (€)'] || r.profit || 0),
+    r:      parseFloat(r['R'] || r.r || 0),
+    status: String(r['STATUT'] || r.status || 'OPEN').toUpperCase(),
+    ticket: String(r['TICKET'] || r.ticket || ''),
+  })).filter(t => t.algo !== '');
+}
+
+// ════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════
+function calcStats(trades) {
+  const closed = trades.filter(t => t.status === 'CLOSED');
+  const wins = closed.filter(t => t.profit > 0);
+  const losses = closed.filter(t => t.profit < 0);
+  const pnl = closed.reduce((s,t) => s + t.profit, 0);
+  const totalR = closed.reduce((s,t) => s + t.r, 0);
+  const wr = closed.length ? wins.length / closed.length * 100 : 0;
+  const gw = wins.reduce((s,t) => s + t.profit, 0);
+  const gl = Math.abs(losses.reduce((s,t) => s + t.profit, 0));
+  const pf = gl > 0 ? gw/gl : gw > 0 ? 99 : 0;
+  const best = closed.length ? Math.max(...closed.map(t => t.profit)) : 0;
+  const worst = closed.length ? Math.min(...closed.map(t => t.profit)) : 0;
+
+  const byAlgo = {};
+  ALGOS.forEach(a => {
+    const at = closed.filter(t => t.algo === a.name);
+    const aw = at.filter(t => t.profit > 0);
+    byAlgo[a.magic] = {
+      trades: at.length,
+      wins: aw.length,
+      losses: at.filter(t => t.profit < 0).length,
+      pnl: at.reduce((s,t) => s + t.profit, 0),
+      r: at.reduce((s,t) => s + t.r, 0),
+    };
+  });
+
+  return { pnl, totalR, wr, pf, best, worst, nClosed: closed.length, nWins: wins.length, nLosses: losses.length, byAlgo };
+}
+
+// ════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════
+function render() {
+  const st = calcStats(allTrades);
+  const app = document.getElementById('app');
+
+  const sign = st.pnl >= 0 ? '+' : '';
+  const pnlClass = st.pnl > 0 ? 'pos' : st.pnl < 0 ? 'neg' : 'neu';
+  const earned = Math.max(0, st.pnl);
+  const tgtPct = Math.min(100, earned / 1750 * 100);
+
+  app.innerHTML = `
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">Portfolio Net P&L</div>
+      <div class="hero-pnl ${pnlClass}">${sign}€${Math.abs(st.pnl).toFixed(2)}</div>
+      <div class="hero-sub">${allTrades.length} trades · 6 algos · 5 comptes IC Markets</div>
+      <div class="hero-pills">
+        <div class="pill">
+          <span class="pill-label">Win Rate</span>
+          <span class="pill-val ${st.wr >= 50 ? 'g' : 'r'}">${st.nClosed ? st.wr.toFixed(1)+'%' : '—'}</span>
+        </div>
+        <div class="pill">
+          <span class="pill-label">Total R</span>
+          <span class="pill-val ${st.totalR >= 0 ? 'g' : 'r'}">${st.nClosed ? (st.totalR >= 0?'+':'')+st.totalR.toFixed(2)+'R' : '—'}</span>
+        </div>
+        <div class="pill">
+          <span class="pill-label">Profit Factor</span>
+          <span class="pill-val ${st.pf >= 1.5 ? 'g' : ''}">${st.nClosed ? st.pf.toFixed(2) : '—'}</span>
+        </div>
+        <div class="pill">
+          <span class="pill-label">Meilleur</span>
+          <span class="pill-val g">${st.best > 0 ? '+€'+st.best.toFixed(0) : '—'}</span>
+        </div>
+        <div class="pill">
+          <span class="pill-label">Pire</span>
+          <span class="pill-val r">${st.worst < 0 ? '-€'+Math.abs(st.worst).toFixed(0) : '—'}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARGET MENSUEL -->
+    <div class="section-hdr"><div class="section-title">Objectif mensuel</div></div>
+    <div class="target-card">
+      <div class="target-top">
+        <div class="target-earned">€${earned.toFixed(0)}</div>
+        <div class="target-goal">/ €1,750 CHF</div>
+      </div>
+      <div class="target-bar"><div class="target-fill" style="width:${tgtPct}%"></div></div>
+      <div class="target-sub">${tgtPct.toFixed(0)}% de l'objectif 1,500–2,000 CHF</div>
+    </div>
+
+    <!-- ALGOS -->
+    <div class="section-hdr"><div class="section-title">Stratégies</div></div>
+    <div class="algo-scroll">${renderAlgoCards(st)}</div>
+
+    <!-- TRADES -->
+    <div class="section-hdr">
+      <div class="section-title">Journal des trades</div>
+      <div class="filters">
+        <div class="filter ${currentFilter==='all'?'on':''}" onclick="setFilter('all')">Tous</div>
+        <div class="filter ${currentFilter==='open'?'on':''}" onclick="setFilter('open')">Open</div>
+        <div class="filter ${currentFilter==='win'?'on':''}" onclick="setFilter('win')">Win</div>
+        <div class="filter ${currentFilter==='loss'?'on':''}" onclick="setFilter('loss')">Loss</div>
+      </div>
+    </div>
+    <div class="trade-list">${renderTrades()}</div>
+  `;
+}
+
+function renderAlgoCards(st) {
+  return ALGOS.map(a => {
+    const as = st.byAlgo[a.magic] || { trades:0, wins:0, losses:0, pnl:0, r:0 };
+    const pnlClass = as.pnl > 0 ? 'pos' : as.pnl < 0 ? 'neg' : '';
+    const pnlStr = (as.pnl >= 0 ? '+€' : '-€') + Math.abs(as.pnl).toFixed(0);
+    const wr = as.trades ? (as.wins/as.trades*100).toFixed(0)+'%' : '—';
+    const wrPct = as.trades ? as.wins/as.trades*100 : 0;
+    const sign = as.pnl >= 0 ? '+' : '';
+
+    return `
+      <div class="acard">
+        <div class="acard-top">
+          <div>
+            <div class="acard-name">${a.name}</div>
+            <div class="acard-sym">${a.sym} · ${a.tf}</div>
+          </div>
+          <div class="acard-dot" style="background:${a.color}"></div>
+        </div>
+        <div class="acard-pnl ${pnlClass}" style="${as.pnl===0?'color:var(--txt2)':''}">${as.trades ? pnlStr : '€0'}</div>
+        <div class="acard-bar">
+          <div class="acard-bar-fill" style="width:${wrPct}%;background:${a.color}"></div>
+        </div>
+        <div class="acard-stats">
+          <div class="astat"><span class="astat-l">WR</span><span class="astat-v">${wr}</span></div>
+          <div class="astat"><span class="astat-l">R</span><span class="astat-v">${as.trades?(sign+as.r.toFixed(1)):'0'}</span></div>
+          <div class="astat"><span class="astat-l">T</span><span class="astat-v">${as.trades}</span></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderTrades() {
+  let list = allTrades;
+  if(currentFilter === 'open')  list = list.filter(t => t.status === 'OPEN');
+  if(currentFilter === 'win')   list = list.filter(t => t.status === 'CLOSED' && t.profit > 0);
+  if(currentFilter === 'loss')  list = list.filter(t => t.status === 'CLOSED' && t.profit < 0);
+
+  list = list.slice().reverse().slice(0, 30);
+
+  if(!list.length) return '<div class="empty">Aucun trade pour le moment</div>';
+
+  return list.map(t => {
+    const isOpen = t.status === 'OPEN';
+    const isWin  = t.status === 'CLOSED' && t.profit > 0;
+    const isLoss = t.status === 'CLOSED' && t.profit < 0;
+    const cls    = isOpen ? 'open' : isWin ? 'win' : isLoss ? 'loss' : '';
+    const badge  = isOpen ? '<span class="badge bo">OPEN</span>' :
+                   isWin  ? '<span class="badge bw">✅ WIN</span>' :
+                            '<span class="badge bl">❌ LOSS</span>';
+    const pnlStr = isOpen ? '—' : (t.profit >= 0 ? '+€' : '-€') + Math.abs(t.profit).toFixed(2);
+    const pnlCol = isOpen ? 'var(--blue)' : t.profit > 0 ? 'var(--green)' : 'var(--red)';
+    const rStr   = isOpen ? '—' : (t.r >= 0 ? '+' : '') + t.r.toFixed(2) + 'R';
+    const dirEmoji = t.dir === 'LONG' ? '📈' : '📉';
+    const priceStr = t.entry ? `${t.entry}${!isOpen && t.profit !== 0 ? ' →' : ''}` : '—';
+
+    return `
+      <div class="tcard ${cls}">
+        <div class="tcard-top">
+          <div class="tcard-algo">${t.algo}</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="tcard-time">${t.heure}</div>
+            ${badge}
+          </div>
+        </div>
+        <div class="tcard-main">
+          <div>
+            <div class="tcard-sym">${t.symbol}</div>
+            <div class="tcard-dir">${dirEmoji} ${t.dir} · ${priceStr}</div>
+          </div>
+          <div class="tcard-pnl" style="color:${pnlCol}">${pnlStr}</div>
+        </div>
+        ${!isOpen ? `
+        <div class="tcard-meta">
+          <div class="tmeta"><b>${rStr}</b>Résultat R</div>
+          <div class="tmeta"><b>${t.date}</b>Date</div>
+        </div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════
+// CONTROLS
+// ════════════════════════════════════════
+function setFilter(f) {
+  currentFilter = f;
+  render();
+}
+
+function showError(msg) {
+  document.getElementById('app').innerHTML =
+    `<div class="error-banner">⚠️ ${msg}</div>`;
+}
+
+// ════════════════════════════════════════
+// DEMO DATA
+// ════════════════════════════════════════
+function getDemoData() {
+  const now = new Date();
+  const fmt = d => d.toISOString().split('T')[0];
+  const fmtT = d => d.toLocaleTimeString('fr-CH',{hour:'2-digit',minute:'2-digit'});
+  const d = (h,m) => { const x=new Date(now); x.setHours(x.getHours()-h,m); return x; };
+  return [
+    {date:fmt(d(2,0)),heure:fmtT(d(2,0)),algo:'Algo2-NASDAQ',symbol:'USTEC',dir:'LONG',entry:19820,sl:0,tp:0,profit:0,r:0,status:'OPEN'},
+    {date:fmt(d(4,0)),heure:fmtT(d(4,0)),algo:'Algo1-DAX',symbol:'DE40',dir:'LONG',entry:22692,sl:22632,tp:22810,profit:47,r:1.88,status:'CLOSED'},
+    {date:fmt(d(26,0)),heure:fmtT(d(26,0)),algo:'Algo3-TPFX',symbol:'USDJPY',dir:'LONG',entry:159.52,sl:159.33,tp:160.0,profit:-49,r:-1.0,status:'CLOSED'},
+    {date:fmt(d(30,0)),heure:fmtT(d(30,0)),algo:'Algo5-XAU',symbol:'XAUUSD',dir:'SHORT',entry:3010,sl:3025,tp:2990,profit:38,r:0.76,status:'CLOSED'},
+    {date:fmt(d(48,0)),heure:fmtT(d(48,0)),algo:'Algo6-LSR',symbol:'EURUSD',dir:'LONG',entry:1.14962,sl:1.14912,tp:1.15037,profit:-25,r:-1.0,status:'CLOSED'},
+    {date:fmt(d(50,0)),heure:fmtT(d(50,0)),algo:'Algo1-DAX',symbol:'DE40',dir:'SHORT',entry:22400,sl:22450,tp:22300,profit:25,r:1.0,status:'CLOSED'},
+    {date:fmt(d(72,0)),heure:fmtT(d(72,0)),algo:'Algo3-TPFX',symbol:'GBPUSD',dir:'LONG',entry:1.284,sl:1.279,tp:1.297,profit:62,r:1.24,status:'CLOSED'},
+  ];
+}
+
+// ════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════
+loadData();
+refreshInterval = setInterval(loadData, 60000); // refresh toutes les 60s
+</script>
+</body>
+</html>
